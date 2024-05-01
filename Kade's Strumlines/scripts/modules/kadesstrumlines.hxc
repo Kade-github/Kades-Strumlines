@@ -42,6 +42,10 @@ class KadesStrumline extends Module
         super("kades-strumlines");
     }
     
+    public function onSongRetry(event:ScriptEvent)
+    {
+        totalNotes = 0;
+    }
 
     public function onStateChangeEnd(event:StateChangeScriptEvent)
     {
