@@ -1,0 +1,149 @@
+import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.FlxSprite;
+import flixel.text.FlxTextBorderStyle;
+import funkin.Conductor;
+import funkin.Paths;
+
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+
+import funkin.Highscore;
+
+class KadesStrumline extends Module
+{
+    public var insidePlaystate:Boolean = false;
+
+    public var totalNotes:Int = 0;
+
+    public var accuracy:FlxText;
+
+    public var backSprite:FlxSprite;
+
+    // https://stackoverflow.com/a/23785753
+    public static function floatToStringPrecision(n:Float, prec:Int){
+        n = Math.round(n * Math.pow(10, prec));
+        var str = ''+n;
+        var len = str.length;
+        if(len <= prec){
+          while(len < prec){
+            str = '0'+str;
+            len++;
+          }
+          return '0.'+str;
+        }
+        else{
+          return str.substr(0, str.length-prec) + '.'+str.substr(str.length-prec);
+        }
+      }
+
+    public function new()
+    {
+        super("kades-strumlines");
+    }
+    
+
+    public function onStateChangeEnd(event:StateChangeScriptEvent)
+    {
+        if (Std.isOfType(event.targetState, PlayState))
+        {
+            trace("changed to playstate!");
+
+            totalNotes = 0;
+
+            insidePlaystate = true;
+            var ourInstance = PlayState.instance;
+            var strumLine = ourInstance.playerStrumline;
+            var opStrum = ourInstance.opponentStrumline;
+
+            // blazin, stolen. Work smarter not harder.
+
+            if (strumLine != null)
+                strumLine.x = FlxG.width / 2 - strumLine.width / 2;
+
+            if (opStrum != null)
+            {
+                for (arrow in opStrum.members)
+                {
+                    arrow.visible = false;
+                }
+            }
+
+            var scoreText = ourInstance.scoreText;
+
+            accuracy = new FlxText(0, 0, FlxG.width, "bruh");
+
+            accuracy.setFormat(Paths.font("vcr.ttf"),16,-1,"left",FlxTextBorderStyle.OUTLINE,-16777216);
+            accuracy.x = ourInstance.healthBarBG.x + 32;
+            accuracy.y = scoreText.y;
+            accuracy.zIndex = ourInstance.scoreText.zIndex;
+            accuracy.scrollFactor = ourInstance.scoreText.scrollFactor;
+
+            ourInstance.add(accuracy);
+            accuracy.cameras = [ourInstance.camHUD];
+
+            // this doesn't work yet because zindex is fucked up :(
+            
+            /*backSprite = new FlxSprite(0, 0).makeGraphic(110 * 4, FlxG.height * 2);
+            backSprite.alpha = 0.3;
+            backSprite.color = 0x000000;
+            backSprite.zIndex = 1004;
+            backSprite.x = (FlxG.width / 2 - backSprite.width / 2) - 6;
+            backSprite.scrollFactor.set();
+
+            ourInstance.add(backSprite);
+
+            backSprite.cameras = [ourInstance.camHUD];*/
+
+        }
+        else
+            insidePlaystate = false;
+    }
+
+	override function onNoteMiss(event:NoteScriptEvent)
+    {
+        if (!insidePlaystate)
+            return;
+
+        totalNotes++;
+    }
+
+    override function onNoteHit(event)
+    {
+        if (!insidePlaystate || !event.note.noteData.getMustHitNote())
+            return;
+
+        totalNotes++;
+    }
+
+    override function onUpdate(event)
+    {
+        if (!insidePlaystate)
+            return;
+
+        var ourInstance = PlayState.instance;
+
+        var strumLine = ourInstance.playerStrumline;
+
+        for (note in strumLine.holdNotes)
+        {
+            note.alpha = 0.5;
+        }
+
+        var scoreText = ourInstance.scoreText;
+        
+        var totalHit = Highscore.tallies.totalNotesHit;
+
+        var acc:Float = totalHit / totalNotes;
+
+        if (totalNotes == 0)
+            acc = 1;
+
+        accuracy.text = "Accuracy: " + Std.string(floatToStringPrecision(acc * 100,2)) + "%";
+    }
+
+    override function onSongLoaded(event:ScriptEvent) 
+    {
+        trace("hello world!");
+    }
+}
