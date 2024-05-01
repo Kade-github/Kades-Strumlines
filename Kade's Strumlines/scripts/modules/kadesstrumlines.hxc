@@ -74,7 +74,7 @@ class KadesStrumline extends Module
             accuracy = new FlxText(0, 0, FlxG.width, "bruh");
 
             accuracy.setFormat(Paths.font("vcr.ttf"),16,-1,"left",FlxTextBorderStyle.OUTLINE,-16777216);
-            accuracy.x = ourInstance.healthBarBG.x + 32;
+            accuracy.x = ourInstance.healthBarBG.x + 64;
             accuracy.y = scoreText.y;
             accuracy.zIndex = ourInstance.scoreText.zIndex;
             accuracy.scrollFactor = ourInstance.scoreText.scrollFactor;
