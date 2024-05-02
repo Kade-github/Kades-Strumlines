@@ -71,7 +71,7 @@ class KadesStrumline extends Module
     {
         if (hasAdded)
             return;
-
+        hasAdded = true;
             var ourInstance = PlayState.instance;
             var strumLine = ourInstance.playerStrumline;
             var opStrum = ourInstance.opponentStrumline;
