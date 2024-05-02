@@ -55,8 +55,7 @@ class KadesStrumline extends Module
             trace("changed to playstate!");
 
             totalNotes = 0;
-            hasAdded = false;
-
+            
             insidePlaystate = true;
 
         }
@@ -71,7 +70,10 @@ class KadesStrumline extends Module
     {
         if (hasAdded)
             return;
-        hasAdded = true;
+
+            trace("adding cool shit!!!");
+
+            hasAdded = true;
             var ourInstance = PlayState.instance;
             var strumLine = ourInstance.playerStrumline;
             var opStrum = ourInstance.opponentStrumline;
