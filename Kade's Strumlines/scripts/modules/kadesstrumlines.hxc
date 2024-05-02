@@ -17,6 +17,7 @@ class KadesStrumline extends Module
     public var totalNotes:Int = 0;
 
     public var accuracy:FlxText;
+    public var hasAdded:Boolean = false;
 
     public var backSprite:FlxSprite;
 
@@ -54,8 +55,23 @@ class KadesStrumline extends Module
             trace("changed to playstate!");
 
             totalNotes = 0;
+            hasAdded = false;
 
             insidePlaystate = true;
+
+        }
+        else
+        {            
+            insidePlaystate = false;
+            hasAdded = false;
+        }
+    }
+
+    public function onCountdownStart(event)
+    {
+        if (hasAdded)
+            return;
+
             var ourInstance = PlayState.instance;
             var strumLine = ourInstance.playerStrumline;
             var opStrum = ourInstance.opponentStrumline;
@@ -85,23 +101,17 @@ class KadesStrumline extends Module
 
             ourInstance.add(accuracy);
             accuracy.cameras = [ourInstance.camHUD];
-
-            // this doesn't work yet because zindex is fucked up :(
             
-            /*backSprite = new FlxSprite(0, 0).makeGraphic(110 * 4, FlxG.height * 2);
+            backSprite = new FlxSprite(0, 0).makeGraphic(110 * 4, FlxG.height * 2);
             backSprite.alpha = 0.3;
             backSprite.color = 0x000000;
-            backSprite.zIndex = 1004;
+            backSprite.zIndex = 2;
             backSprite.x = (FlxG.width / 2 - backSprite.width / 2) - 6;
             backSprite.scrollFactor.set();
 
             ourInstance.add(backSprite);
 
-            backSprite.cameras = [ourInstance.camHUD];*/
-
-        }
-        else
-            insidePlaystate = false;
+            backSprite.cameras = [ourInstance.camHUD];
     }
 
 	override function onNoteMiss(event:NoteScriptEvent)
